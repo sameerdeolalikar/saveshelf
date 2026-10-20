@@ -12,3 +12,11 @@ Use focused commits with imperative subjects. Pull requests should explain the
 problem, resulting behavior, data-loss implications, and validation. Fixtures must
 be synthetic bytes, not real player saves, account information, or copied game assets.
 Preserve third-party license notices when dependencies change.
+
+
+The local UI uses plain HTML, CSS, and JavaScript with two-space indentation. Keep
+user-controlled text out of HTML injection paths and preserve loopback/origin checks.
+Run `npm ci`, install Chromium with `npx playwright install chromium`, start the
+application as documented in README, then run `npm run test:ui`. Use synthetic
+fixtures and a disposable SaveShelf workspace. UI changes should include reproduction
+steps and desktop/narrow-screen evidence kept outside application source.

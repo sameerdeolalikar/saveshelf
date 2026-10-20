@@ -2,14 +2,40 @@
 
 **Keep a known copy. Verify it. Restore somewhere new.**
 
-SaveShelf is a Rust CLI for local snapshots of single-player game save folders.
+SaveShelf is a local snapshot manager with a browser interface, a Rust backend,
+and a companion CLI for single-player game save folders.
 It records file sizes and SHA-256 checksums, verifies stored bytes, and restores
 into a new directory without overwriting live game saves. It is intended for
 players keeping their own local checkpoints before trying a different game path.
 
 This is a new project with an initial snapshot/verify/restore implementation.
-It has no accounts, telemetry, cloud sync, game-process hooks, or network calls at
-runtime. Dependencies are downloaded when building through Cargo.
+It has no accounts, telemetry, cloud sync, game-process hooks, or external network calls at
+runtime. The optional UI uses a loopback HTTP server. Dependencies are downloaded when building through Cargo.
+
+## Open the snapshot manager
+
+```bash
+cargo run -- serve /path/to/a/new/saveshelf-workspace
+```
+
+Open **http://127.0.0.1:7413**. The server creates `sources/`, `vault/`, and
+`restores/` under that workspace. Use “Create fictional demo save” to try the full
+capture → verify → restore flow. For your own local files, place a **copy** of a save
+folder under `sources/`; source folder names must use letters, numbers, hyphens,
+or underscores. Close the game before capture.
+
+The UI lists completed checkpoints, verifies selected snapshots, previews file names,
+sizes, and checksum prefixes, and restores into a new named folder under `restores/`.
+It shows activity, validation errors, and the completed recovery location. The first
+100 files are displayed; verification still checks every file. Only one operation
+runs at a time. It does not yet provide cancellation, percentage progress, comparison
+against live saves, or automatic retention. Leave the server running until an operation
+finishes. Do not concurrently edit workspace directories.
+
+This is a local browser application, **not a packaged native desktop application**.
+Desktop packaging and native folder selection remain on the roadmap. The server binds
+only to loopback and rejects cross-origin mutation requests; do not expose it through
+a public proxy. Original CLI commands remain available for standalone workflows.
 
 ## Try it with fictional data first
 
@@ -84,7 +110,7 @@ cargo fmt --check
 cargo clippy --all-targets --locked -- -D warnings
 ```
 
-There are 12 initial integration tests on Linux, including snapshot round trips,
+There are 12 core integration tests and a workspace-name boundary test on Linux, including snapshot round trips,
 empty directories, corruption, inventory changes, output protection, incomplete
 snapshots, traversal rejection, versioning, and symlinks. The symlink test is Unix-only.
 Initial checks use stable Rust on Linux; cross-platform validation remains planned.
@@ -92,3 +118,20 @@ Initial checks use stable Rust on Linux; cross-platform validation remains plann
 See [ROADMAP.md](ROADMAP.md), [CONTRIBUTING.md](CONTRIBUTING.md), and
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). GitHub Actions is not configured.
 Licensed under [MIT](LICENSE).
+
+## Browser verification
+
+Start `cargo run -- serve /tmp/saveshelf-ui-test-workspace` against a **disposable**
+workspace. The browser test adds fictional data, snapshots, and recovery folders there.
+With Node.js 20+ available, run in another terminal:
+
+```bash
+npm ci
+npx playwright install chromium
+npm run test:ui
+```
+
+The test checks capture, verification, restored bytes, refusal to overwrite an existing
+destination, traversal rejection, request-origin checks, and a 390px layout. Current
+browser validation uses Chromium on Linux. See [UI.md](UI.md) for architecture and
+future development scenarios. Never point automated UI tests at a real-save workspace.

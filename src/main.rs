@@ -1,12 +1,14 @@
 use saveshelf::{list, restore, snapshot, verify, Result};
 use std::{env, path::Path, process};
+mod web;
 
 fn run(args: &[String]) -> Result<()> {
     if args.is_empty() || args[0] == "--help" {
-        println!("SaveShelf\nsnapshot SOURCE --vault VAULT\nlist --vault VAULT\nverify SNAPSHOT\nrestore SNAPSHOT --output NEW_DIRECTORY\nRestore writes NEW_DIRECTORY/files and never overwrites existing destinations.");
+        println!("SaveShelf\nserve WORKSPACE\nsnapshot SOURCE --vault VAULT\nlist --vault VAULT\nverify SNAPSHOT\nrestore SNAPSHOT --output NEW_DIRECTORY\nRestore writes NEW_DIRECTORY/files and never overwrites existing destinations.");
         return Ok(());
     }
     match args[0].as_str() {
+        "serve" if args.len() == 2 => web::serve(Path::new(&args[1]))?,
         "snapshot" if args.len() == 4 && args[2] == "--vault" => println!(
             "{}",
             snapshot(Path::new(&args[1]), Path::new(&args[3]))?.display()

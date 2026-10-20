@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SaveShelf · Keep your next chapter safe</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="mark" aria-hidden="true">▣</span>SaveShelf
+      </div>
+      <span class="badge">LOCAL SNAPSHOT MANAGER</span>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">A checkpoint you can come back to</p>
+          <h1>Keep your next chapter safe.</h1>
+          <p class="sub">
+            Capture a local save folder, check every stored file, and recover
+            into a fresh location. Your live saves stay untouched.
+          </p>
+        </div>
+        <button id="refresh">Refresh workspace</button>
+      </div>
+      <div id="error" class="status error" role="alert" hidden></div>
+      <div id="status" class="status" role="status" hidden></div>
+      <div id="busy" class="status" role="status" hidden>
+        Working… Keep this window open until the operation finishes.
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <strong id="source-count">0</strong><span>Source folders</span>
+        </div>
+        <div class="stat">
+          <strong id="snapshot-count">0</strong><span>Completed snapshots</span>
+        </div>
+        <div class="stat">
+          <strong id="verified-count">—</strong
+          ><span>Files verified in selection</span>
+        </div>
+        <div class="stat">
+          <strong>Local</strong><span>No cloud accounts or uploads</span>
+        </div>
+      </div>
+      <div class="workspace">
+        <aside>
+          <section class="panel">
+            <h2>Capture a checkpoint</h2>
+            <label
+              >Source folder<select id="source">
+                <option value="">No source folders yet</option>
+              </select></label
+            >
+            <p class="muted">
+              Close the game before capturing. Put a copy of a save folder under
+              your workspace’s <code>sources/</code> directory.
+            </p>
+            <button id="capture" class="primary" disabled>
+              Create snapshot
+            </button>
+            <hr class="divider" />
+            <button id="demo">Create fictional demo save</button>
+            <p class="muted">A safe way to try the full workflow.</p>
+          </section>
+          <section class="panel">
+            <h3>Workspace location</h3>
+            <p id="workspace" class="muted wrap">Connecting…</p>
+            <p class="notice">
+              Folders: sources / vault / restores.<br />Use letters, numbers,
+              hyphens, and underscores for source names. Existing restore
+              destinations are always refused.
+            </p>
+          </section>
+        </aside>
+        <div>
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Your checkpoints</h2>
+              <span class="tag">Newest first</span>
+            </div>
+            <div id="snapshots" class="list">
+              <div class="empty">
+                <strong>No snapshots yet.</strong>Create a fictional demo save,
+                then capture your first checkpoint.
+              </div>
+            </div>
+          </section>
+          <section class="panel" aria-labelledby="restore-title">
+            <div class="panel-title">
+              <h2 id="restore-title">Restore with confidence</h2>
+              <span id="verification" class="tag">Nothing selected</span>
+            </div>
+            <div class="steps">
+              <span id="step1" class="step active">1 · Select</span
+              ><span id="step2" class="step">2 · Verify & inspect</span
+              ><span id="step3" class="step">3 · Restore copy</span>
+            </div>
+            <p id="selection" class="muted wrap">
+              Select a checkpoint above to inspect its contents.
+            </p>
+            <button id="verify" disabled>Verify selected snapshot</button>
+            <div id="details" hidden>
+              <div class="scroll">
+                <table>
+                  <caption>
+                    Verified snapshot contents · first 100 files shown
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">File</th>
+                      <th scope="col">Size</th>
+                      <th scope="col">SHA-256 prefix</th>
+                    </tr>
+                  </thead>
+                  <tbody id="files"></tbody>
+                </table>
+              </div>
+              <p id="manifest-summary" class="muted"></p>
+              <hr class="divider" />
+              <label
+                >New recovery folder name<input
+                  id="destination"
+                  placeholder="e.g. before-the-final-boss"
+                  maxlength="100"
+                  pattern="[A-Za-z0-9_-]+"
+              /></label>
+              <p class="notice">
+                A fresh folder is created under <code>restores/</code>. Your
+                recovered data will be inside its <code>files/</code> folder.
+                SaveShelf verifies bytes again while copying.
+              </p>
+              <button id="restore" class="primary" disabled>
+                Restore into new folder
+              </button>
+            </div>
+            <div id="complete" class="status" hidden>
+              <strong>Recovery copy is ready.</strong>
+              <p id="restored-path" class="wrap"></p>
+              <p>
+                Inspect the recovered files before manually moving them to a
+                game’s save location.
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer>
+        SaveShelf · Rust snapshot engine · Checksums detect corruption; they do
+        not establish trusted authorship.<br />Initial UI operations run one at
+        a time. Cancellation, packaged desktop distribution, and real-game
+        compatibility testing remain planned.
+      </footer>
+    </main>
+  </body>
+</html>
